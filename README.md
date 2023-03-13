@@ -1,5 +1,7 @@
-# Filler-semi-CRF
+# Filler-semi-CRF [WIP]
 Codebase for "Transcription free filler word detection with Neural semi-CRFs" [ICASSP2023], arxiv link:
+
+<p align = "center"><img src="./assets/sd.pdf"  alt="filler" width="500"  style="display: block; margin: 0 auto" /></p>
 
 # Setup
 This repository requires Python 3.X and Pytorch 1.X. Other packages are listed in requirements.txt.
@@ -16,13 +18,17 @@ Two more efficient methods are supported. The code will automatically detect if 
 This version is faster but requires manual compilation for each machine environment. Run python setup.py install from the directory extensions/cauchy/.
 
 # Usage
-## Dataset
+## Dataset preprocessing
 
-[PodcastFillers](https://podcastfillers.github.io/) Dataset
+[PodcastFillers Dataset](https://podcastfillers.github.io/) 
+
+## Training
+
+## Inference
+In this implementation, we directly use the VAD predictions provided by the [PodcastFillers Dataset](https://podcastfillers.github.io/), which is based on [GPVAD](https://github.com/RicherMans/GPV), these predictions could be replaced by any other pretrained VAD models.
 
 
 # Citations
-
 
 
 ```bibtex
