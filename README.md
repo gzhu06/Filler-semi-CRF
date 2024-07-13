@@ -1,8 +1,6 @@
 # Filler-semi-CRF
 Codebase for "Transcription free filler word detection with Neural semi-CRFs" [ICASSP2023], arxiv link:
-
-<p align = "center"><img src="./assets/sd.png"  alt="filler" width="500"  style="display: block; margin: 0 auto" /></p>
-
+ 
 # Setup
 This repository requires Python 3.X and Pytorch 1.X. Other packages are listed in requirements.txt.
 
