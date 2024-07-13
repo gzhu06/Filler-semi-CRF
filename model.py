@@ -92,66 +92,6 @@ class S4_layer(nn.Module):
         
         return x
 
-    
-class SEGBASELINE(nn.Module):
-    def __init__(self, inputdim, numclass=6, labelres=20, 
-                 backbone_type='crnn', nb_layers=4, **kwargs):
-        super().__init__()
-        
-        self.inputdim = inputdim
-        self.backbone_type = backbone_type
-        
-        if backbone_type == 's4':
-            d_layers = []
-            hidden_size = 64
-            for _ in range(nb_layers):
-                d_layers.append(S4_layer(dim=hidden_size, state_dim=64,
-                                         bidirectional=True))
-
-                
-            self.s4_layer = nn.ModuleList(d_layers)
-            self.outputlayer = nn.Linear(hidden_size, numclass)
-        else:
-            hidden_size = 32
-            self.features = nn.Sequential(Block2(32, 48, stride_size=1),
-                                          Block2(48, 48, stride_size=1),
-                                          Block2(48, 64, stride_size=1),
-                                          Block2(64, 64, stride_size=1))
-            self.rnn = nn.LSTM(64, 64, bidirectional=True, batch_first=True)
-            self.features.apply(init_weights)
-            self.outputlayer = nn.Linear(128, numclass)
-        
-        if labelres == 10:
-            self.conv1 = nn.Conv1d(inputdim, hidden_size, kernel_size=3, stride=1, padding=1)
-            self.apool = nn.AvgPool1d(10, stride=9, padding=0)
-        elif labelres == 20:
-            self.conv1 = nn.Conv1d(inputdim, hidden_size, kernel_size=3, stride=1, padding=3)
-            self.apool = nn.AvgPool1d(10, stride=5, padding=2)
-        
-        # initialization
-        self.conv1.apply(init_weights)
-        self.outputlayer.apply(init_weights)
-
-    def forward(self, x):
-        
-        x = self.conv1(x)
-        
-        if self.backbone_type == 's4':
-            for layer in self.s4_layer:
-                skip = x
-                x = layer(x)
-                x = x + skip
-            
-        else:
-            x = self.features(x).transpose(1, 2)
-            x, _ = self.rnn(x)
-            x = x.transpose(1, 2)
-        
-        x = self.apool(x).transpose(1, 2)
-        x = self.outputlayer(x)
-
-        return x
-
 class SEGCRF(nn.Module):
     def __init__(self, inputdim, numclass=6, nb_layers=4,
                  skip_score=False, backbone_type='crnn',
@@ -227,10 +167,4 @@ class SEGCRF(nn.Module):
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-if __name__ == '__main__':
-    import os 
-    
-    fillerModel = SEGBASELINE(inputdim=64, numclass=6, backbone_type='s4')
-    # fillerModel = SEGCRF(inputdim=64, numclass=6, backbone_type='s4')
-    print(count_parameters(fillerModel))
     
